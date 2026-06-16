@@ -1027,7 +1027,13 @@
 }
 
 @media print {
+  /* Fixed legal-landscape printable area (13.5in × 8in @ 96dpi) — contains
+     the JS-scaled .print-card to exactly one physical page. */
   #printRoot.print-mode-legal-full .print-page {
+    width: 1296px;
+    height: 768px;
+    padding: 0;
+    overflow: hidden;
     page-break-after: always;
     break-after: page;
     page-break-inside: avoid;
