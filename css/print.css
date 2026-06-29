@@ -660,12 +660,12 @@
 
   /* Restore stripe backgrounds for out-of-service and one-way (overrides the solid bg above) */
   .print-table .schedule-grid__trip-bar.out-of-service,
-  .print-table .schedule-grid__trip-bar.one-way {
+  .print-table .schedule-grid__trip-bar.is-one-way {
     background: repeating-linear-gradient(-45deg,
-        color-mix(in srgb, var(--tripbar-color) var(--rux-print-bar-stripe-lo), var(--rux-print-cell-bg)),
-        color-mix(in srgb, var(--tripbar-color) var(--rux-print-bar-stripe-lo), var(--rux-print-cell-bg)) 8px,
-        color-mix(in srgb, var(--tripbar-color) var(--rux-print-bar-stripe-hi), var(--rux-print-cell-bg)) 8px,
-        color-mix(in srgb, var(--tripbar-color) var(--rux-print-bar-stripe-hi), var(--rux-print-cell-bg)) 16px) !important;
+        color-mix(in srgb, var(--tripbar-active-variant-color, var(--tripbar-background)) var(--rux-print-bar-stripe-lo), var(--rux-print-cell-bg)),
+        color-mix(in srgb, var(--tripbar-active-variant-color, var(--tripbar-background)) var(--rux-print-bar-stripe-lo), var(--rux-print-cell-bg)) 8px,
+        color-mix(in srgb, var(--tripbar-active-variant-color, var(--tripbar-background)) var(--rux-print-bar-stripe-hi), var(--rux-print-cell-bg)) 8px,
+        color-mix(in srgb, var(--tripbar-active-variant-color, var(--tripbar-background)) var(--rux-print-bar-stripe-hi), var(--rux-print-cell-bg)) 16px) !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -899,6 +899,17 @@
   color: var(--rux-print-text-1) !important;
 }
 
+/* Restore stripe for one-way trips in V2 (overrides the solid bg above) */
+#printRoot.print-mode-legal-v2 .pgv2-bar-wrapper .schedule-grid__trip-bar.is-one-way {
+  background: repeating-linear-gradient(-45deg,
+      color-mix(in srgb, var(--tripbar-active-variant-color, var(--tripbar-background)) var(--rux-print-bar-stripe-lo), var(--rux-print-cell-bg)),
+      color-mix(in srgb, var(--tripbar-active-variant-color, var(--tripbar-background)) var(--rux-print-bar-stripe-lo), var(--rux-print-cell-bg)) 8px,
+      color-mix(in srgb, var(--tripbar-active-variant-color, var(--tripbar-background)) var(--rux-print-bar-stripe-hi), var(--rux-print-cell-bg)) 8px,
+      color-mix(in srgb, var(--tripbar-active-variant-color, var(--tripbar-background)) var(--rux-print-bar-stripe-hi), var(--rux-print-cell-bg)) 16px) !important;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
 /* Remove shadows/filters on the entire V2 print root */
 #printRoot.print-mode-legal-v2,
 #printRoot.print-mode-legal-v2 * {
@@ -936,8 +947,12 @@
   border-bottom: 1px solid var(--rux-print-grid-borders);
   box-sizing: border-box;
   background: var(--rux-print-cell-bg);
+  color: #000;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
+}
+#printRoot.print-mode-legal-full .pgv2-hcell * {
+  color: #000;
 }
 #printRoot.print-mode-legal-full .pgv2-hcell .schedule-grid__day-label {
   display: flex;
@@ -967,9 +982,13 @@
   height: var(--schedule-row-height, 161px);
   overflow: hidden;
   background: var(--rux-print-cell-bg);
+  color: #000;
   position: relative;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
+}
+#printRoot.print-mode-legal-full .pgv2-bus-cell * {
+  color: #000;
 }
 
 #printRoot.print-mode-legal-full .pgv2-bars-area {
@@ -1021,6 +1040,22 @@
   z-index: 10;
 }
 
+/* Lighten bar fill so printed copies aren't too dark — text stays opaque */
+#printRoot.print-mode-legal-full .pgv2-bar-wrapper .schedule-grid__trip-bar:not(.out-of-service):not(.is-one-way) {
+  background: oklch(from var(--tripbar-active-variant-color, var(--tripbar-background)) l c h / 50%) !important;
+}
+
+/* Restore stripe for one-way trips in legal-full (overrides the solid bg above) */
+#printRoot.print-mode-legal-full .pgv2-bar-wrapper .schedule-grid__trip-bar.is-one-way {
+  background: repeating-linear-gradient(-45deg,
+      color-mix(in srgb, var(--tripbar-active-variant-color, var(--tripbar-background)) var(--rux-print-bar-stripe-lo), var(--rux-print-cell-bg)),
+      color-mix(in srgb, var(--tripbar-active-variant-color, var(--tripbar-background)) var(--rux-print-bar-stripe-lo), var(--rux-print-cell-bg)) 8px,
+      color-mix(in srgb, var(--tripbar-active-variant-color, var(--tripbar-background)) var(--rux-print-bar-stripe-hi), var(--rux-print-cell-bg)) 8px,
+      color-mix(in srgb, var(--tripbar-active-variant-color, var(--tripbar-background)) var(--rux-print-bar-stripe-hi), var(--rux-print-cell-bg)) 16px) !important;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
 /* Hide the action row (appears on selection in live mode) */
 #printRoot.print-mode-legal-full .schedule-grid__trip-bar__row--11 {
   display: none !important;
@@ -1044,4 +1079,42 @@
     page-break-after: auto;
     break-after: auto;
   }
+}
+
+/* All print modes: row text colors are computed from the bar color as light/white values
+   designed for dark screens. Override the variables so every element that reads
+   --tripbar-rN-color (title, sub, icons, badges) gets near-black instead. */
+#printRoot .schedule-grid__trip-bar {
+  --tripbar-r1-color: var(--rux-print-text-1);
+  --tripbar-r2-color: var(--rux-print-text-1);
+  --tripbar-r3-color: var(--rux-print-text-1);
+  --tripbar-r4-color: var(--rux-print-text-1);
+  --tripbar-r5-color: var(--rux-print-text-1);
+  --tripbar-r6-color: var(--rux-print-text-1);
+}
+
+@media print {
+  #printRoot .schedule-grid__trip-bar {
+    --tripbar-r1-color: var(--rux-print-text-1);
+    --tripbar-r2-color: var(--rux-print-text-1);
+    --tripbar-r3-color: var(--rux-print-text-1);
+    --tripbar-r4-color: var(--rux-print-text-1);
+    --tripbar-r5-color: var(--rux-print-text-1);
+    --tripbar-r6-color: var(--rux-print-text-1);
+  }
+}
+
+/* Legal print modes: all text forced to black */
+#printRoot.print-mode-legal *,
+#printRoot.print-mode-legal-v2 *,
+#printRoot.print-mode-legal-full * {
+  color: #000 !important;
+}
+
+/* Legal print modes: boost stripe contrast so one-way/out-of-service are visible on white */
+#printRoot.print-mode-legal,
+#printRoot.print-mode-legal-v2,
+#printRoot.print-mode-legal-full {
+  --rux-print-bar-stripe-lo: 0%;
+  --rux-print-bar-stripe-hi: 40%;
 }
