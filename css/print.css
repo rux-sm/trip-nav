@@ -579,12 +579,18 @@
 
   #printRoot.print-mode-letter-full .trip-dest-cust {
     font-size: 9.5pt;
+    color: #000 !important;
   }
 
   #printRoot.print-mode-letter-full .trip-times,
-  #printRoot.print-mode-letter-full .trip-drivers,
   #printRoot.print-mode-letter-full .trip-notes {
     font-size: var(--rux-print-font-size);
+    color: #000 !important;
+  }
+
+  #printRoot.print-mode-letter-full .trip-drivers {
+    font-size: var(--rux-print-font-size);
+    color: #003087 !important;
   }
 }
 
@@ -605,10 +611,10 @@
 /* Print overrides (migrated from _legacy-grid.css) */
 @media print {
       #printRoot.print-mode-legal .print-table .schedule-grid__trip-bar {
-        --tripbar-r6-color: #d60000 !important;
+        --tripbar-r6-color: #003087 !important;
       }
       #printRoot.print-mode-legal .print-table .schedule-grid__trip-bar .schedule-grid__trip-bar__multi-badge {
-        color: var(--rux-print-text-1) !important;
+        color: #000 !important;
       }
     #printRoot.print-mode-legal .schedule-grid__row--notes,
     #printRoot.print-mode-legal .schedule-grid__row--notes .schedule-grid__cell {
@@ -616,12 +622,12 @@
       font-weight: bold !important;
     }
   #printRoot.print-mode-legal .schedule-grid__trip-bar__row--6 {
-    color: #d60000 !important;
+    color: #003087 !important;
     font-weight: bold !important;
   }
   #printRoot.print-mode-legal .print-table .schedule-grid__trip-bar__time {
     background: none !important;
-    color: var(--rux-print-text-1) !important;
+    color: #000 !important;
     font-weight: bold !important;
     border-radius: 0 !important;
     padding: 0 !important;
@@ -862,19 +868,19 @@
   z-index: 10;
 }
 
-/* Force all text inside V2 trip bars to be dark for print */
+/* Force text inside V2 trip bars: rows 1-5 black, drivers dark blue */
 #printRoot.print-mode-legal-v2 .pgv2-bar-wrapper .schedule-grid__trip-bar .schedule-grid__trip-bar__title {
-  color: var(--rux-print-text-1) !important;
+  color: #000 !important;
   text-shadow: none !important;
   font-size: var(--rux-print-font-size-sm) !important;
 }
 #printRoot.print-mode-legal-v2 .pgv2-bar-wrapper .schedule-grid__trip-bar .schedule-grid__trip-bar__sub {
-  color: var(--rux-print-text-2) !important;
+  color: #000 !important;
   text-shadow: none !important;
   font-size: 7pt !important;
 }
 #printRoot.print-mode-legal-v2 .pgv2-bar-wrapper .schedule-grid__trip-bar .schedule-grid__trip-bar__time {
-  color: var(--rux-print-text-1) !important;
+  color: #000 !important;
   text-shadow: none !important;
   font-size: 7pt !important;
   background: none !important;
@@ -888,7 +894,7 @@
   font-weight: bold !important;
 }
 #printRoot.print-mode-legal-v2 .pgv2-bar-wrapper .schedule-grid__trip-bar .schedule-grid__trip-bar__driver {
-  color: var(--rux-print-text-1) !important;
+  color: #003087 !important;
   text-shadow: none !important;
   font-size: 7pt !important;
 }
@@ -896,7 +902,7 @@
   display: flex !important;
 }
 #printRoot.print-mode-legal-v2 .pgv2-bar-wrapper .schedule-grid__trip-bar .schedule-grid__trip-bar__multi-badge {
-  color: var(--rux-print-text-1) !important;
+  color: #000 !important;
 }
 
 /* Restore stripe for one-way trips in V2 (overrides the solid bg above) */
@@ -1082,25 +1088,25 @@
 }
 
 /* All print modes: row text colors are computed from the bar color as light/white values
-   designed for dark screens. Override the variables so every element that reads
-   --tripbar-rN-color (title, sub, icons, badges) gets near-black instead. */
+   designed for dark screens. Override the variables so rows 1-5 read as black and
+   drivers (r6) read as dark blue across all print layouts. */
 #printRoot .schedule-grid__trip-bar {
-  --tripbar-r1-color: var(--rux-print-text-1);
-  --tripbar-r2-color: var(--rux-print-text-1);
-  --tripbar-r3-color: var(--rux-print-text-1);
-  --tripbar-r4-color: var(--rux-print-text-1);
-  --tripbar-r5-color: var(--rux-print-text-1);
-  --tripbar-r6-color: var(--rux-print-text-1);
+  --tripbar-r1-color: #000;
+  --tripbar-r2-color: #000;
+  --tripbar-r3-color: #000;
+  --tripbar-r4-color: #000;
+  --tripbar-r5-color: #000;
+  --tripbar-r6-color: #003087;
 }
 
 @media print {
   #printRoot .schedule-grid__trip-bar {
-    --tripbar-r1-color: var(--rux-print-text-1);
-    --tripbar-r2-color: var(--rux-print-text-1);
-    --tripbar-r3-color: var(--rux-print-text-1);
-    --tripbar-r4-color: var(--rux-print-text-1);
-    --tripbar-r5-color: var(--rux-print-text-1);
-    --tripbar-r6-color: var(--rux-print-text-1);
+    --tripbar-r1-color: #000;
+    --tripbar-r2-color: #000;
+    --tripbar-r3-color: #000;
+    --tripbar-r4-color: #000;
+    --tripbar-r5-color: #000;
+    --tripbar-r6-color: #003087;
   }
 }
 
@@ -1109,6 +1115,13 @@
 #printRoot.print-mode-legal-v2 *,
 #printRoot.print-mode-legal-full * {
   color: #000 !important;
+}
+
+/* Re-assert driver dark blue after the catch-all above */
+#printRoot.print-mode-legal .schedule-grid__trip-bar__driver,
+#printRoot.print-mode-legal-v2 .schedule-grid__trip-bar__driver,
+#printRoot.print-mode-legal-full .schedule-grid__trip-bar__driver {
+  color: #003087 !important;
 }
 
 /* Legal print modes: boost stripe contrast so one-way/out-of-service are visible on white */
