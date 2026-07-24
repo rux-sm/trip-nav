@@ -509,13 +509,25 @@ function buildPrintScheduleAllRowsLegal() {
   if (barMix) printRoot.style.setProperty("--rux-print-bar-bg-mix", barMix);
   else printRoot.style.removeProperty("--rux-print-bar-bg-mix");
 
-  printRoot.appendChild(buildPage(allRows.slice(0, 5)));
-  printRoot.appendChild(buildPage(allRows.slice(5)));
+  const pages = [];
+  [allRows.slice(0, 5), allRows.slice(5, 10)].forEach((rows) => {
+    if (!rows.length) return;
+    pages.push(buildPage(rows));
+  });
+  pages.forEach((el) => printRoot.appendChild(el));
 
-  // Fit each page to legal landscape: 13.5in × 8in printable at 96dpi
-  const printW = (14 - 0.5) * 96;  // 1296px
+  // Scale each page (uniformly — font size and padding included, not just
+  // height) to fill the legal landscape printable area: 13.5in × 8in at
+  // 96dpi. The .print-mode-legal-full .print-page rule fixes each page to
+  // exactly this size with overflow:hidden, so a scaled-up or scaled-down
+  // card always lands within a single physical page.
+  const printW = (14 - 0.5) * 96; // 1296px
   const printH = (8.5 - 0.5) * 96; // 768px
 
+  // Measuring requires the element to actually render — "is-hidden" sets
+  // display:none, which always reports a height of 0.
+  const wasHidden = printRoot.classList.contains("is-hidden");
+  printRoot.classList.remove("is-hidden");
   printRoot.style.cssText = "position:absolute;left:-9999px;visibility:hidden;";
   void printRoot.offsetHeight; // force layout
 
@@ -524,12 +536,14 @@ function buildPrintScheduleAllRowsLegal() {
     if (!card) return;
     const h = card.offsetHeight;
     if (!h) return;
-    const zoom = Math.min(1, printH / h);
-    card.style.width = Math.round(printW / zoom) + "px";
-    card.style.zoom = String(zoom);
+    const scale = printH / h;
+    card.style.width = `${Math.round(printW / scale)}px`;
+    card.style.transformOrigin = "top left";
+    card.style.transform = `scale(${scale})`;
   });
 
   printRoot.style.cssText = "";
+  if (wasHidden) printRoot.classList.add("is-hidden");
 }
 
 function clearPrintRoot() {
